@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <meta name="apple-mobile-web-app-title" content="Workout" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="theme-color" content="#111111" />
+  <title>Workout Split</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+```
+body {
+  background: #111;
+  color: #eee;
+  font-family: Georgia, 'Times New Roman', serif;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overscroll-behavior: none;
+}
+
+/* Header */
+.header {
+  padding: env(safe-area-inset-top, 16px) 20px 16px;
+  padding-top: max(env(safe-area-inset-top, 16px), 16px);
+  border-bottom: 1px solid #2a2a2a;
+}
+.header-sub { font-size: 10px; letter-spacing: 0.22em; color: #666; text-transform: uppercase; margin-bottom: 6px; font-family: Helvetica, Arial, sans-serif; }
+.header h1 { font-size: clamp(1.4rem, 6vw, 2rem); font-weight: normal; letter-spacing: -0.02em; line-height: 1; }
+.header h1 em { font-style: italic; }
+
+/* Tabs */
+.tabs { display: flex; border-bottom: 1px solid #1e1e1e; }
+.tab {
+  flex: 1;
+  padding: 14px 4px 12px;
+  background: transparent;
+  border: none;
+  border-right: 1px solid #1e1e1e;
+  color: #555;
+  cursor: pointer;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 11px;
+  font-weight: bold;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: background 0.18s, color 0.18s;
+  -webkit-tap-highlight-color: transparent;
+}
+.tab:last-child { border-right: none; }
+.tab .tab-sub { font-size: 9px; font-weight: normal; opacity: 0.6; margin-top: 3px; letter-spacing: 0.08em; }
+.tab.active .tab-sub { opacity: 1; }
+
+/* Day panel */
+.panel { display: none; padding: 24px 20px 40px; }
+.panel.active { display: block; }
+
+.day-badge {
+  display: inline-block;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 9px;
+  font-weight: bold;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  margin-bottom: 10px;
+  color: #111;
+}
+.day-title { font-size: clamp(1rem, 5vw, 1.4rem); font-weight: normal; letter-spacing: -0.01em; margin-bottom: 24px; }
+
+/* Exercise rows */
+.exercise {
+  display: grid;
+  grid-template-columns: 28px 1fr auto;
+  gap: 10px;
+  padding: 16px 0;
+  border-bottom: 1px solid #1e1e1e;
+  align-items: start;
+}
+.ex-num { font-family: Helvetica, Arial, sans-serif; font-size: 11px; font-weight: bold; padding-top: 2px; }
+.ex-name { font-size: 15px; margin-bottom: 4px; }
+.ex-note { font-size: 11px; color: #666; line-height: 1.4; font-style: italic; }
+.ex-sets {
+  text-align: right;
+  white-space: nowrap;
+  font-family: Helvetica, Arial, sans-serif;
+}
+.ex-sets-label { font-size: 8px; letter-spacing: 0.12em; text-transform: uppercase; color: #555; margin-bottom: 3px; }
+.ex-sets-val { font-size: 13px; font-weight: bold; }
+
+/* Tips panel */
+.tips-header { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: #555; font-family: Helvetica, Arial, sans-serif; margin-bottom: 20px; }
+.tips-title { font-size: clamp(1rem, 5vw, 1.3rem); font-weight: normal; margin-bottom: 24px; }
+.tip { display: flex; gap: 12px; padding: 14px 0; border-bottom: 1px solid #1e1e1e; align-items: baseline; }
+.tip-dash { font-family: Helvetica, Arial, sans-serif; font-size: 14px; }
+.tip-text { font-size: 13px; color: #aaa; line-height: 1.5; }
+
+.schedule { margin-top: 32px; }
+.sched-label { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: #555; font-family: Helvetica, Arial, sans-serif; margin-bottom: 14px; }
+.sched-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
+.sched-day {
+  border-radius: 6px;
+  padding: 10px 4px;
+  text-align: center;
+  font-family: Helvetica, Arial, sans-serif;
+}
+.sched-day-tag { font-size: 9px; font-weight: bold; letter-spacing: 0.08em; margin-bottom: 4px; }
+.sched-day-label { font-size: 8px; opacity: 0.8; }
+.sched-rest { background: #1e1e1e; color: #555; }
+```
+
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-sub">4-Day Weekly Split</div>
+  <h1>Upper Body <em id="header-em">Growth</em></h1>
+</div>
+
+<div class="tabs" id="tabs">
+  <button class="tab active" data-day="0" onclick="switchDay(0)">
+    MON<div class="tab-sub">Day 1</div>
+  </button>
+  <button class="tab" data-day="1" onclick="switchDay(1)">
+    TUE<div class="tab-sub">Day 2</div>
+  </button>
+  <button class="tab" data-day="2" onclick="switchDay(2)">
+    THU<div class="tab-sub">Day 3</div>
+  </button>
+  <button class="tab" data-day="3" onclick="switchDay(3)">
+    FRI<div class="tab-sub">Day 4</div>
+  </button>
+  <button class="tab" data-day="4" onclick="switchDay(4)">
+    INFO<div class="tab-sub">Notes</div>
+  </button>
+</div>
+
+<div id="panels"></div>
+
+<script>
+const COLORS = ["#E8FF47", "#FF6B35", "#A8DADC", "#C77DFF"];
+
+const days = [
+  {
+    label: "DAY 1", focus: "Push — Chest & Shoulders",
+    exercises: [
+      { name: "Incline Barbell Press", sets: "4 × 6–8", note: "Primary chest builder — go heavy" },
+      { name: "Seated DB Shoulder Press", sets: "3 × 8–10", note: "Full ROM, control the descent" },
+      { name: "Cable Chest Flye (low to high)", sets: "3 × 12–15", note: "Squeeze hard at peak contraction" },
+      { name: "Lateral Raise Machine", sets: "4 × 12–15", note: "Lean slightly forward, slow eccentrics" },
+      { name: "Pec Deck / Machine Flye", sets: "3 × 12–15", note: "Finishing pump, minimal ego" },
+      { name: "Pike Push-Up", sets: "2 × 12–15", note: "Optional burnout — feel the shoulders" },
+    ]
+  },
+  {
+    label: "DAY 2", focus: "Pull — Back & Biceps",
+    exercises: [
+      { name: "Weighted Pull-Up", sets: "4 × 5–8", note: "If not weighted, go to failure each set" },
+      { name: "Seated Cable Row (wide grip)", sets: "3 × 8–10", note: "Drive elbows back, chest tall" },
+      { name: "Lat Pulldown (underhand)", sets: "3 × 10–12", note: "Slight lean back, squeeze lats at bottom" },
+      { name: "Single-Arm DB Row", sets: "3 × 10–12 each", note: "Support on bench, full stretch at top" },
+      { name: "Face Pull (rope)", sets: "3 × 15–20", note: "Shoulder health — never skip this" },
+      { name: "Incline DB Curl", sets: "3 × 10–12", note: "Full stretch, supinate at top" },
+    ]
+  },
+  {
+    label: "DAY 3", focus: "Legs + Core",
+    exercises: [
+      { name: "Barbell Back Squat", sets: "4 × 6–8", note: "Depth matters — hit parallel" },
+      { name: "Romanian Deadlift", sets: "3 × 8–10", note: "Hinge, don't squat. Feel the hamstrings" },
+      { name: "Leg Press", sets: "3 × 10–12", note: "Feet high for more glute/ham" },
+      { name: "Walking Lunge (DB)", sets: "3 × 10 each leg", note: "Knee tracks over toe" },
+      { name: "Hanging Leg Raise", sets: "3 × 12–15", note: "Posterior pelvic tilt at the top" },
+      { name: "Cable Crunch", sets: "3 × 15–20", note: "Abs do the work, not the hip flexors" },
+    ]
+  },
+  {
+    label: "DAY 4", focus: "Upper — Arms & Weak Points",
+    exercises: [
+      { name: "Close-Grip Bench Press", sets: "4 × 6–8", note: "Elbows tucked, triceps first" },
+      { name: "EZ-Bar Preacher Curl", sets: "3 × 8–10", note: "Remove momentum, isolate the peak" },
+      { name: "Overhead Cable Tricep Extension", sets: "3 × 10–12", note: "Long head stretch — chin up" },
+      { name: "Hammer Curl (cable or DB)", sets: "3 × 10–12", note: "Brachialis builder, thickens arms" },
+      { name: "Dips (weighted or BW)", sets: "3 × 8–12", note: "Slight forward lean hits lower chest too" },
+      { name: "Rear Delt Flye Machine", sets: "3 × 15–20", note: "Round out the shoulder — high reps" },
+    ]
+  },
+];
+
+const tips = [
+  "Rest 90s–2min on hypertrophy sets, 2–3min on heavy compound lifts",
+  "Progressive overload is the goal: add reps or weight each week",
+  "Protein target: 0.8–1g per lb of bodyweight daily",
+  "Sleep 7–9hrs — that's when muscle is actually built",
+  "Schedule: Mon/Tue  →  Rest Wed  →  Thu/Fri",
+];
+
+const schedule = [
+  { tag: "MON", label: "Push", color: COLORS[0] },
+  { tag: "TUE", label: "Pull", color: COLORS[1] },
+  { tag: "WED", label: "Rest", color: null },
+  { tag: "THU", label: "Legs", color: COLORS[2] },
+  { tag: "FRI", label: "Arms", color: COLORS[3] },
+  { tag: "SAT", label: "Rest", color: null },
+  { tag: "SUN", label: "Rest", color: null },
+];
+
+function buildPanels() {
+  const container = document.getElementById("panels");
+
+  days.forEach((day, i) => {
+    const color = COLORS[i];
+    const textColor = (color === "#FF6B35" || color === "#C77DFF") ? "#111" : "#111";
+    const div = document.createElement("div");
+    div.className = "panel" + (i === 0 ? " active" : "");
+    div.id = `panel-${i}`;
+
+    const exHTML = day.exercises.map((ex, j) => `
+      <div class="exercise">
+        <div class="ex-num" style="color:${color}">${String(j+1).padStart(2,"0")}</div>
+        <div>
+          <div class="ex-name">${ex.name}</div>
+          <div class="ex-note">${ex.note}</div>
+        </div>
+        <div class="ex-sets">
+          <div class="ex-sets-label">Sets × Reps</div>
+          <div class="ex-sets-val" style="color:${color}">${ex.sets}</div>
+        </div>
+      </div>
+    `).join("");
+
+    div.innerHTML = `
+      <div class="day-badge" style="background:${color};color:${textColor}">${day.label}</div>
+      <div class="day-title">${day.focus}</div>
+      ${exHTML}
+    `;
+    container.appendChild(div);
+  });
+
+  // Tips panel
+  const tipDiv = document.createElement("div");
+  tipDiv.className = "panel";
+  tipDiv.id = "panel-4";
+
+  const tipsHTML = tips.map(t => `
+    <div class="tip">
+      <span class="tip-dash" style="color:#E8FF47">—</span>
+      <span class="tip-text">${t}</span>
+    </div>
+  `).join("");
+
+  const schedHTML = schedule.map(s => {
+    if (s.color) {
+      const tc = (s.color === "#FF6B35" || s.color === "#C77DFF") ? "#111" : "#111";
+      return `<div class="sched-day" style="background:${s.color};color:${tc}">
+        <div class="sched-day-tag">${s.tag}</div>
+        <div class="sched-day-label">${s.label}</div>
+      </div>`;
+    }
+    return `<div class="sched-day sched-rest">
+      <div class="sched-day-tag">${s.tag}</div>
+      <div class="sched-day-label">${s.label}</div>
+    </div>`;
+  }).join("");
+
+  tipDiv.innerHTML = `
+    <div class="tips-header">Program Notes</div>
+    <div class="tips-title">Guidelines & Recovery</div>
+    ${tipsHTML}
+    <div class="schedule">
+      <div class="sched-label">Weekly Schedule</div>
+      <div class="sched-grid">${schedHTML}</div>
+    </div>
+  `;
+  container.appendChild(tipDiv);
+}
+
+function switchDay(i) {
+  const color = i < 4 ? COLORS[i] : "#eeeeee";
+  document.querySelectorAll(".tab").forEach((t, j) => {
+    t.classList.toggle("active", j === i);
+    if (j === i && i < 4) {
+      t.style.background = color;
+      t.style.color = (color === "#FF6B35" || color === "#C77DFF") ? "#111" : "#111";
+    } else {
+      t.style.background = "";
+      t.style.color = "";
+    }
+  });
+  document.querySelectorAll(".panel").forEach((p, j) => {
+    p.classList.toggle("active", j === i);
+  });
+  document.getElementById("header-em").style.color = i < 4 ? color : "#eeeeee";
+  window.scrollTo(0, 0);
+}
+
+buildPanels();
+// Set initial tab color
+document.querySelector(".tab.active").style.background = COLORS[0];
+document.querySelector(".tab.active").style.color = "#111";
+</script>
+
+</body>
+</html>
